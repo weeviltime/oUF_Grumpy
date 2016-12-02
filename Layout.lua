@@ -10,52 +10,10 @@ local BACKDROP = {
 local function PostCreateAura(self, button)
 	local cdText = button.cd:GetRegions()
 	cdText:ClearAllPoints()
-	cdText:SetFontObject(GameFontNormalSmall)
+	cdText:SetFontObject("LiberationSansCenter")
 	cdText:SetTextColor(1,1,1,1)
 	cdText:SetTextHeight(10)
 	cdText:SetPoint("BOTTOM",button,"BOTTOM",0,2)
-end
-
--- Tag Test
---NumberFormat
-local function NumberFormat(value)
-	if(value >= 1e6) then
-		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
-	elseif(value >= 1e4) then
-		return gsub(format('%.1fk', value / 1e3), '%.?0+([km])$', '%1')
-	else
-		return value
-	end
-end
-
-oUF.Tags.Events["grumpy:shorthp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION"
-oUF.Tags.Events["grumpy:hpper"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION"
-oUF.Tags.Events["grumpy:shortpp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER"
-
-oUF.Tags.Methods["grumpy:shorthp"] = function(unit)
-	if(UnitIsDead(unit) or UnitIsGhost(unit)) then
-		return "|cff999999Dead|r"
-	end
-	return NumberFormat(UnitHealth(unit))
-end
-
-oUF.Tags.Methods["grumpy:shortpp"] = function(unit)
-	if(UnitIsDead(unit) or UnitIsGhost(unit)) then return end
-
-	local cur = UnitPower(unit)
-	if(cur > 0) then
-		return NumberFormat(cur)
-	end
-end
-
-oUF.Tags.Methods["grumpy:hpper"] = function(unit)
-	if(UnitIsDead(unit) or UnitIsGhost(unit))  then
-		return "|cff9999990%|r"
-	end
-	local hpMin, hpMax = UnitHealth(unit), UnitHealthMax(unit)
-	local hpPer = 0
-	if hpMax > 0 then hpPer = math.floor(hpMin/hpMax*100) end
-	return NumberFormat(hpPer).."%"
 end
 
 local UnitSpecific = {
@@ -111,10 +69,10 @@ local UnitSpecific = {
 		self.Castbar:SetPoint("TOP",self.CastbarFrame)
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
 		self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
-		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		TimeText:SetPoint("RIGHT", self.Castbar)
-		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		SpellText:SetPoint("LEFT",self.Castbar)
+		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansRight")
+		TimeText:SetPoint("RIGHT", self.Castbar,0,2)
+		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
+		SpellText:SetPoint("LEFT",self.Castbar,0,2)
 
 
 		if(PlayerClass == "ROGUE" or PlayerClass == "DRUID" or PlayerClass == "MONK") then
@@ -139,6 +97,8 @@ local UnitSpecific = {
 			ManaBar:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,0)
 			self.AdditionalPower = ManaBar
 		end
+
+		-- TODO: Totems
 
 		-- Register with oUF
 		self.Buffs = Buffs
@@ -202,14 +162,15 @@ local UnitSpecific = {
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetSize(30,30)
 		SpellIcon:SetPoint("TOPLEFT",self.CastbarFrame,"TOPLEFT")
-		self.Castbar:SetSize(270,30)
+		--self.Castbar:SetSize(270,30)
 		self.Castbar:SetPoint("TOP",self.CastbarFrame)
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
+		self.Castbar:SetPoint("LEFT",self.Castbar.SpellIcon)
 		self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
-		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		TimeText:SetPoint("RIGHT", self.Castbar)
-		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		SpellText:SetPoint("LEFT",self.Castbar)
+		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansRight")
+		TimeText:SetPoint("RIGHT", self.Castbar,0,2)
+		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
+		SpellText:SetPoint("LEFT",self.Castbar,0,2)
 
 		-- Register with oUF
 		self.Buffs = Buffs
@@ -236,9 +197,9 @@ local UnitSpecific = {
 		self.Castbar:SetSize(self:GetWidth()-15,15)
 		self.Castbar:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
 		self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
-		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansRight")
 		TimeText:SetPoint("RIGHT", self.Castbar)
-		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
 		SpellText:SetPoint("LEFT",self.Castbar)
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetSize(15,15)
@@ -261,9 +222,9 @@ local UnitSpecific = {
 		self.Castbar:SetSize(self:GetWidth()-15,15)
 		self.Castbar:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
 		self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
-		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansRight")
 		TimeText:SetPoint("RIGHT", self.Castbar)
-		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
 		SpellText:SetPoint("LEFT",self.Castbar)
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetSize(15,15)
@@ -275,10 +236,6 @@ local function Shared(self, unit)
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
-
-	-- Unit Class
-	local _, class = UnitClass(unit)
-	self.class = class
 
 	--create health statusbar func
 	local Health = CreateFrame("StatusBar", nil, self)
@@ -299,18 +256,15 @@ local function Shared(self, unit)
 	Health.colorHealth = false
 
 	-- Text Tags
-	local NameText = Health:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	NameText:SetFont(GameFontNormal:GetFont(), 10)
+	local NameText = Health:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
 	NameText:SetTextColor(1, 1, 1)
 	self.NameText = NameText
 	self:Tag(self.NameText,"[name]")
 
 	-- Health Tags
-	local HealthValue = Health:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	HealthValue:SetFont(GameFontNormal:GetFont(), 10)
+	local HealthValue = Health:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
 	HealthValue:SetTextColor(1, 1, 1)
-	local HealthPer = Health:CreateFontString(nil,"OVERLAY","GameFontNormal")
-	HealthPer:SetFont(GameFontNormal:GetFont(), 10)
+	local HealthPer = Health:CreateFontString(nil,"OVERLAY","LiberationSansLeft")
 	HealthPer:SetTextColor(1,1,1)
 	self.HealthValue = HealthValue
 	self.HealthPer = HealthPer
@@ -336,8 +290,7 @@ local function Shared(self, unit)
 	Power.colorReaction = false
 
 	-- Power Tags
-	local PowerValue = Power:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	PowerValue:SetFont(GameFontNormal:GetFont(), 10)
+	local PowerValue = Power:CreateFontString(nil, "OVERLAY", "LiberationSansLeft")
 	PowerValue:SetTextColor(1, 1, 1)
 	self.PowerValue = PowerValue
 	self:Tag(self.PowerValue, "[grumpy:shortpp]")
