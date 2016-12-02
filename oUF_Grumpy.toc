@@ -1,0 +1,10 @@
+## Interface: 70100
+## Title: oUF: |c000b7bffGrumpy
+## Notes: Grumpy is an oUF layout for the Crow AddOn package.
+## Author: GrumpyShaman/P0br3
+## Version: r67
+## Dependencies: oUF
+
+Layout.lua
+Tags.lua
+
