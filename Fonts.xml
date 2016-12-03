@@ -1,17 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<FontFamily name="LiberationSansNormal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSans-Regular.ttf" height="10" outline="NORMAL" monochrome="true"/>
+			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSans-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
 		</Member>
 	</FontFamily>
 	<FontFamily name="LiberationSerifNormal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSerif-Regular.ttf" height="10" outline="NORMAL" monochrome="true"/>
+			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSerif-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
 		</Member>
 	</FontFamily>
 	<FontFamily name="LiberationMonoNormal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationMono-Regular.ttf" height="10" outline="NORMAL" monochrome="true"/>
+			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationMono-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
 		</Member>
 	</FontFamily>
 
