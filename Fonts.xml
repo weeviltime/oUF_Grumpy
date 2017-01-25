@@ -1,22 +1,30 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<FontFamily name="LiberationSansNormal" virtual="true">
+	<FontFamily name="DejaVuTextNormal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSans-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
+			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\DejaVuSans.ttf" height="10">
+				<Shadow>
+					<Offset x="1" y="-1" />
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
 		</Member>
 	</FontFamily>
-	<FontFamily name="LiberationSerifNormal" virtual="true">
+	<FontFamily name="DejaVuAuraNormal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationSerif-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
-		</Member>
-	</FontFamily>
-	<FontFamily name="LiberationMonoNormal" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\LiberationMono-Regular.ttf" height="10" outline="NORMAL" monochrome="false"/>
+			<Font font="Interface\AddOns\oUF_Grumpy\Fonts\DejaVuSans.ttf" height="12">
+				<Shadow>
+					<Offset x="1" y="-1" />
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
 		</Member>
 	</FontFamily>
 
-	<Font name="LiberationSansLeft" inherits="LiberationSansNormal" justify="LEFT" virtual="true" />
-	<Font name="LiberationSansCenter" inherits="LiberationSansNormal" justify="CENTER" virtual="true" />
-	<Font name="LiberationSansRight" inherits="LiberationSansNormal" justify="LEFT" virtual="true" />
+	<Font name="DejaVuTextNormalLeft" inherits="DejaVuTextNormal" justifyH="LEFT" virtual="true" />
+	<Font name="DejaVuTextNormalCenter" inherits="DejaVuTextNormal" justifyH="CENTER" virtual="true" />
+	<Font name="DejaVuTextNormalRight" inherits="DejaVuTextNormal" justifyH="RIGHT" virtual="true" />
+	<Font name="DejaVuAuraNormalLeft" inherits="DejaVuAuraNormal" justifyH="LEFT" virtual="true" />
+	<Font name="DejaVuAuraNormalCenter" inherits="DejaVuAuraNormal" justifyH="CENTER" virtual="true" />
+	<Font name="DejaVuAuraNormalRight" inherits="DejaVuAuraNormal" justifyH="RIGHT" virtual="true" />
 </Ui>
 
