@@ -56,8 +56,8 @@ local UnitSpecific = {
 		self.PowerValue:SetJustifyH("RIGHT")
 
 		-- Level & Name Tag
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",1,-1)
-		self.NameText:SetPoint("LEFT",self.LevelText,"RIGHT",1,0)
+		self.LevelText:SetPoint("BOTTOMLEFT",self.Health,"BOTTOMLEFT",1,1)
+		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -72,23 +72,29 @@ local UnitSpecific = {
 		PortraitModel:SetHeight(149.5)
 		PortraitModel:SetBackdrop(BACKDROP)
 		PortraitModel:SetBackdropColor(0,0,0)
-		PortraitModel:SetPoint("CENTER",nil,"CENTER",-401,-90)]]
+		PortraitModel:SetPoint("CENTER",nil,"CENTER",-401,-90)
+		]]
 
 		-- Castbar
 		self.CastbarFrame:SetSize(300,30)
 		self.CastbarFrame:SetPoint("CENTER",UIParent,"CENTER",0,-220)
+
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
-		SpellIcon:SetSize(30,30)
-		SpellIcon:SetPoint("TOPLEFT",self.CastbarFrame,"TOPLEFT")
-		self.Castbar:SetPoint("TOP",self.CastbarFrame)
-		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
-		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
-		--self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
+		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
+		SpellIcon:SetPoint("TOP",self.CastbarFrame)
+		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
+		SpellIcon:SetWidth(self.CastbarFrame:GetHeight())
+		SpellIcon:SetTexCoord(.06,.94,.06,.94)
+
 		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
-		TimeText:SetPoint("RIGHT", self.Castbar,1,0)
+		TimeText:SetPoint("RIGHT", self.Castbar,-1,0)
+
 		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
+		self.Castbar:SetPoint("TOP",self.CastbarFrame)
+		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
+		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
 
 		if(PlayerClass == "ROGUE" or PlayerClass == "DRUID" or PlayerClass == "MONK") then
 			local ClassIcons = {}
@@ -147,15 +153,12 @@ local UnitSpecific = {
 		Debuffs:SetSize(200,48)
 		Debuffs.size = ICONSIZE
 		Debuffs.spacing = 2
+		Debuffs.onlyShowPlayer = true
 		Debuffs["growth-x"] = "LEFT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs.initialAnchor = "TOPRIGHT"
 		Debuffs:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,-2)
 		Debuffs.PostCreateIcon = PostCreateAura
-
-		-- Level & Name Tag
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",1,-1)
-		self.NameText:SetPoint("LEFT",self.LevelText,"RIGHT",1,0)
 
 		-- Health Tags position and settings
 		self.HealthValue:SetPoint("RIGHT", self.Health, "RIGHT", -2, -1)
@@ -166,6 +169,10 @@ local UnitSpecific = {
 		-- Power Tags position and settings
 		self.PowerValue:SetPoint("LEFT", self.Power, "LEFT", 2, 0)
 		self.PowerValue:SetJustifyH("LEFT")
+
+		-- Level & Name Tag
+		self.LevelText:SetPoint("BOTTOMLEFT",self.Health,"BOTTOMLEFT",1,1)
+		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -180,7 +187,8 @@ local UnitSpecific = {
 		PortraitModel:SetHeight(149.5)
 		PortraitModel:SetBackdrop(BACKDROP)
 		PortraitModel:SetBackdropColor(0,0,0)
-		PortraitModel:SetPoint("CENTER",nil,"CENTER",401,-90)]]
+		PortraitModel:SetPoint("CENTER",nil,"CENTER",401,-90)
+		]]
 
 		-- Castbar
 		self.CastbarFrame:SetSize(300,30)
@@ -197,6 +205,11 @@ local UnitSpecific = {
 		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
+		-- Quest Icon
+		local QuestIcon = self:CreateTexture(nil,"OVERLAY")
+		QuestIcon:SetSize(16, 16)
+		QuestIcon:SetPoint("CENTER", self, "BOTTOMRIGHT", 0 ,0)
+
 		-- Register with oUF
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
@@ -204,14 +217,16 @@ local UnitSpecific = {
 		self.Castbar.Time = TimeText
 		self.Castbar.Text = SpellText
 		self.Castbar.Icon = SpellIcon
+		self.QuestIcon = QuestIcon
 	end,
 
 	targettarget = function(self)
-		self:SetSize(99.5,36)
+		self:SetSize(100,36)
 		self.Health:SetHeight(25)
 		self.Power:SetHeight(10)
+
 		-- Text Tags settings
-		self.NameText:SetPoint("LEFT",self.Health,"TOPLEFT",1,-5)
+		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
 		self.NameText:SetJustifyH("LEFT")
 
 		-- Health Tags settings
@@ -232,11 +247,12 @@ local UnitSpecific = {
 	end,
 
 	focus = function(self)
-		self:SetSize(99.5,36)
+		self:SetSize(100,36)
 		self.Health:SetHeight(25)
 		self.Power:SetHeight(10)
+
 		-- Text Tags settings
-		self.NameText:SetPoint("LEFT",self.Health,"TOPLEFT",1,-5)
+		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
 		self.NameText:SetJustifyH("LEFT")
 
 		-- Health Tags settings
@@ -335,12 +351,14 @@ local function Shared(self, unit)
 
 	-- Castbar
 	local Castbar = CreateFrame("StatusBar",nil,self)
+	Castbar:SetFrameStrata("LOW")
 	Castbar:SetStatusBarTexture(TEXTURE)
+	Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
+
 	local CastbarFrame = CreateFrame("Frame",nil,Castbar)
 	CastbarFrame:SetFrameStrata("BACKGROUND")
 	CastbarFrame:SetBackdrop(BACKDROP)
 	CastbarFrame:SetBackdropColor(0,0,0)
-	Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
 
 	-- Registiring everything
 	self.Health = Health
