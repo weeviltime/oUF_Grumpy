@@ -1,8 +1,8 @@
-## Interface: 70100
+## Interface: 70200
 ## Title: oUF: |c000b7bffGrumpy
 ## Notes: Grumpy is an oUF layout for the Crow AddOn package.
-## Author: GrumpyShaman/P0br3
-## Version: r85
+## Author: GrumpyShaman
+## Version: @project-version@
 ## Dependencies: oUF
 
 Fonts.xml

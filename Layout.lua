@@ -1,63 +1,72 @@
-local _, PlayerClass = UnitClass("player")
+local _, playerClass = UnitClass("player")
 
 local TEXTURE = "Interface\\ChatFrame\\ChatFrameBackground"
 local BACKDROP = {
 	bgFile = TEXTURE,
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
-local ICONSIZE = 27
+local ICON_SIZE = 30
+local P_HEALTH_WIDTH = 350
+local P_POWER_WIDTH = 50
+local S_HEALTH_WIDTH = 150
 
 -- Functions
 local function PostCreateAura(self, button)
+	-- I have to thank P3lim, creator of oUF_P3lim
+	-- and other Plugins, this part of code ensure that our strings
+	-- stay above cooldown widget.
+	local StringParent = CreateFrame("Frame", nil, button)
+	StringParent:SetFrameLevel(20)
+
 	local cd = button.cd:GetRegions()
 	cd:ClearAllPoints()
-	cd:SetFontObject("DejaVuAuraNormalCenter")
+	cd:SetFontObject("DejaVuAuraOutlineCenter")
 	cd:SetTextColor(1,1,1,1)
-	--cd:SetTextHeight(12)
 	cd:SetPoint("BOTTOM",button,"BOTTOM",0,2)
 
 	local stack = button.count
 	stack:ClearAllPoints()
-	stack:SetFontObject("DejaVuAuraNormalCenter")
+	stack:SetParent(StringParent)
+	stack:SetFontObject("DejaVuAuraOutlineCenter")
 	stack:SetTextColor(1,1,1,1)
 	stack:SetPoint("TOPRIGHT",button,"TOPRIGHT",0,0)
+
+	button.icon:SetTexCoord(.06,.94,.06,.94)
 end
 
 local UnitSpecific = {
 	player = function(self)
-		-- Absorbs
-		self.HealPrediction.absorbBar:SetWidth(self:GetWidth())
+		-- Health
+		self.Health:SetWidth(P_HEALTH_WIDTH)
 
 		-- Buffs
 		local Buffs = CreateFrame("Frame", nil, self)
-		Buffs:SetSize(200, 48)
-		Buffs.size = ICONSIZE
+		Buffs:SetWidth(P_HEALTH_WIDTH)
+		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
 		Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 7)
 		Buffs.PostCreateIcon = PostCreateAura
 
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
-		Debuffs:SetSize(200,48)
-		Debuffs.size = ICONSIZE
+		Debuffs:SetWidth(P_HEALTH_WIDTH)
+		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,-2)
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("LEFT", self.Health, "LEFT", 2, -1)
-		self.HealthValue:SetJustifyH("LEFT")
-		self.HealthPer:SetPoint("RIGHT",self.Health,"RIGHT",-2,-1)
-		self.HealthPer:SetJustifyH("RIGHT")
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 1)
+		self.Health.textSeparator("RIGHT", self.HealthValue, "LEFT", 0, 0)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,0)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("RIGHT", self.Power, "RIGHT", -2, 1)
-		self.PowerValue:SetJustifyH("RIGHT")
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPIGHT", 0, 1)
 
 		-- Level & Name Tag
-		self.LevelText:SetPoint("BOTTOMLEFT",self.Health,"BOTTOMLEFT",1,1)
-		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,1)
+		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -96,7 +105,7 @@ local UnitSpecific = {
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
 		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
 
-		if(PlayerClass == "ROGUE" or PlayerClass == "DRUID" or PlayerClass == "MONK") then
+		if(playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "MONK") then
 			local ClassIcons = {}
 			for index = 1, 6 do
 				local Icon = self:CreateTexture(nil, "BACKGROUND")
@@ -107,7 +116,7 @@ local UnitSpecific = {
 			end
 			self.ClassIcons = ClassIcons
 		end
-		if(PlayerClass == "MONK") then
+		if(playerClass == "MONK") then
 			local Stagger = CreateFrame("StatusBar",nil,self)
 			Stagger:SetSize(200,5)
 			Stagger:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
@@ -115,7 +124,7 @@ local UnitSpecific = {
 			Stagger:SetBackdrop(BACKDROP)
 			Stagger:SetBackdropColor(0,0,0)
 			self.Stagger = Stagger
-		elseif(PlayerClass == "SHAMAN" or PlayerClass == "PRIEST" or PlayerClass == "DRUID") then
+		elseif(playerClass == "SHAMAN" or playerClass == "PRIEST" or playerClass == "DRUID") then
 			local ManaBar = CreateFrame("StatusBar",nil,self)
 			ManaBar:SetSize(200,5)
 			ManaBar:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
@@ -280,19 +289,12 @@ local function Shared(self, unit)
 
 	--create health statusbar func
 	local Health = CreateFrame("StatusBar", nil, self)
-	Health:SetHeight(35)
+	Health:SetHeight(10)
 	Health:SetPoint("BOTTOM")
 	Health:SetPoint("LEFT")
 	Health:SetPoint("RIGHT")
 	Health:SetStatusBarTexture(TEXTURE)
 	Health:SetStatusBarColor(0.2, 0.2, 0.2)
-
-	-- Test for Absorb bars
-	local AbsorbBar = CreateFrame("StatusBar", nil, self)
-	AbsorbBar:SetPoint("TOPLEFT",Health,"TOPLEFT",0,-1)
-	AbsorbBar:SetHeight(5)
-	AbsorbBar:SetStatusBarTexture(TEXTURE)
-	AbsorbBar:SetStatusBarColor(1,1,1,1)
 
 	-- Health Options
 	Health.frequentUpdates = true
@@ -316,18 +318,22 @@ local function Shared(self, unit)
 	self:Tag(self.NameText,"[name]")
 
 	-- Health Tag
-	local HealthValue = Health:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
-	HealthValue:SetTextColor(1, 1, 1)
-	local HealthPer = Health:CreateFontString(nil,"OVERLAY","DejaVuTextNormalLeft")
+	local textSeparator = Health:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
+	textSeparator:SetTextColor(1, 1, 1)
+	textSeparator:SetText("|")
+	local HealthValue = Health:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
+	HealthValueiSetTextColor(1, 1, 1)
+	local HealthPer = Health:CreateFontString(nil,"OVERLAY","DejaVuTextNormalRight")
 	HealthPer:SetTextColor(1,1,1)
 	self.HealthValue = HealthValue
 	self.HealthPer = HealthPer
+	self.Health.textSeparator = textSeparator
 	self:Tag(self.HealthPer,"[grumpy:hpper]")
 	self:Tag(self.HealthValue, "[grumpy:shorthp]")
 
 	-- Position and size
 	local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetHeight(15)
+	Power:SetHeight(10)
 	Power:SetPoint("TOP")
 	Power:SetPoint("LEFT")
 	Power:SetPoint("RIGHT")
@@ -362,16 +368,9 @@ local function Shared(self, unit)
 
 	-- Registiring everything
 	self.Health = Health
-	self.HealPrediction = {
-		absorbBar = AbsorbBar,
-		frequentUpdates = true,
-	}
 	self.Power = Power
 	self.Castbar = Castbar
 	self.CastbarFrame = CastbarFrame
-	self:SetSize(200,51)
-	self:SetBackdrop(BACKDROP)
-	self:SetBackdropColor(0, 0, 0)
 
 	if(UnitSpecific[unit]) then
 		return UnitSpecific[unit](self)
