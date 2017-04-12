@@ -7,8 +7,12 @@ local BACKDROP = {
 }
 local ICON_SIZE = 30
 local P_HEALTH_WIDTH = 350
-local P_POWER_WIDTH = 50
+local P_HEALTH_HEIGHT = 10
+local P_POWER_WIDTH = 100
+local P_POWER_HEIGHT = 7
 local S_HEALTH_WIDTH = 150
+local S_POWER_WIDTH = 50
+
 
 -- Functions
 local function PostCreateAura(self, button)
@@ -38,10 +42,17 @@ local UnitSpecific = {
 	player = function(self)
 		-- Health
 		self.Health:SetWidth(P_HEALTH_WIDTH)
+		self.Health:SetHeight(P_HEALTH_HEIGHT)
+
+		-- Power
+		self.Power:SetWidth(P_POWER_WIDTH)
+		self.Power:SetHeight(P_POWER_HEIGHT)
+		self.Power:SetPoint("BOTTOMRIGHT",self.Health,"TOPRIGHT",0, 1)
 
 		-- Buffs
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs:SetWidth(P_HEALTH_WIDTH)
+		Buffs:SetHeight(ICON_SIZE * 2)
 		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
 		Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 7)
@@ -53,20 +64,20 @@ local UnitSpecific = {
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs["growth-y"] = "DOWN"
-		Debuffs:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,-2)
+		Debuffs:SetPoint("TOPRIGHT",self.Totems,"BOTTOMRIGHT",0,-2)
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 1)
-		self.Health.textSeparator("RIGHT", self.HealthValue, "LEFT", 0, 0)
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 0)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 0)
 		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,0)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPIGHT", 0, 1)
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 0)
 
 		-- Level & Name Tag
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,1)
 		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -126,7 +137,7 @@ local UnitSpecific = {
 			self.Stagger = Stagger
 		elseif(playerClass == "SHAMAN" or playerClass == "PRIEST" or playerClass == "DRUID") then
 			local ManaBar = CreateFrame("StatusBar",nil,self)
-			ManaBar:SetSize(200,5)
+			ManaBar:SetSize(P_POWER_WIDTH, P_POWER_HEIGHT)
 			ManaBar:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
 			ManaBar:SetStatusBarTexture(TEXTURE)
 			ManaBar:SetBackdrop(BACKDROP)
@@ -136,8 +147,28 @@ local UnitSpecific = {
 		end
 
 		-- TODO: Totems
+		local Totems = {}
+		for index = 1, MAX_TOTEMS do
+			-- Position and size of the totem indicator
+			local Totem = CreateFrame("BUTTON", nil, self)
+			Totem:SetSize(25, 25)
+			Totem:SetPoint("TOPLEFT", self.LevelText, "BOTTOMLEFT", index * Totem:GetWidth(), 0)
+
+			local Icon = Totem:CreateTexture(nil, "OVERLAY")
+			Icon:SetAllPoints()
+
+			local Cooldown = CreateFrame("Cooldown", nil, Totem, "CooldownFrameTemplate")
+			Cooldown:SetAllPoints()
+
+			Totem.Icon = Icon
+			Totem.Cooldown = Cooldown
+
+			Totems[index] = Totem
+		end
 
 		-- Register with oUF
+		self:SetWidth(P_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		--self.Portrait = PortraitModel
@@ -147,14 +178,22 @@ local UnitSpecific = {
  end,
 
  target = function(self)
+		-- Health
+		self.Health:SetWidth(P_HEALTH_WIDTH)
+		self.Health:SetHeight(P_HEALTH_HEIGHT)
+
+		-- Power
+		self.Power:SetWidth(P_POWER_WIDTH)
+		self.Power:SetHeight(P_POWER_HEIGHT)
+		self.Power:SetPoint("BOTTOMRIGHT",self.Health,"TOPRIGHT",0, 1)
+
 		-- Buffs
 		local Buffs = CreateFrame("Frame", nil, self)
-		Buffs:SetSize(200,48)
-		Buffs.size = ICONSIZE
+		Buffs:SetWidth(P_HEALTH_WIDTH)
+		Buffs:SetHeight(ICON_SIZE * 2)
+		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
-		Buffs["growth-x"] = "LEFT"
-		Buffs.initialAnchor = "BOTTOMRIGHT"
-		Buffs:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 7)
+		Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 7)
 		Buffs.PostCreateIcon = PostCreateAura
 
 		-- Debuffs
@@ -170,18 +209,16 @@ local UnitSpecific = {
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("RIGHT", self.Health, "RIGHT", -2, -1)
-		self.HealthValue:SetJustifyH("RIGHT")
-		self.HealthPer:SetPoint("LEFT",self.Health,"LEFT",2,-1)
-		self.HealthPer:SetJustifyH("LEFT")
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 0)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 0)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,0)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("LEFT", self.Power, "LEFT", 2, 0)
-		self.PowerValue:SetJustifyH("LEFT")
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 0)
 
 		-- Level & Name Tag
-		self.LevelText:SetPoint("BOTTOMLEFT",self.Health,"BOTTOMLEFT",1,1)
-		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
+		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -220,6 +257,8 @@ local UnitSpecific = {
 		QuestIcon:SetPoint("CENTER", self, "BOTTOMRIGHT", 0 ,0)
 
 		-- Register with oUF
+		self:SetWidth(P_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		--self.Portrait = PortraitModel
@@ -230,20 +269,25 @@ local UnitSpecific = {
 	end,
 
 	targettarget = function(self)
-		self:SetSize(100,36)
-		self.Health:SetHeight(25)
-		self.Power:SetHeight(10)
+		self.Health:SetWidth(S_HEALTH_WIDTH)
+		self.Health:SetHeight(P_HEALTH_HEIGHT)
+		self.Power:SetWidth(S_HEALTH_WIDTH)
+		self.Power:SetHeight(P_POWER_HEIGHT)
 
-		-- Text Tags settings
-		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
-		self.NameText:SetJustifyH("LEFT")
+		-- Health Tags position and settings
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, -1)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-0)
 
-		-- Health Tags settings
-		self.HealthPer:SetPoint("RIGHT",self.Health,"BOTTOMRIGHT",-1,6)
-		self.HealthPer:SetJustifyH("RIGHT")
+		-- Power Tags position and settings
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
+
+		-- Level & Name Tag
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,1)
+		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
 
 		-- Castbar
-		self.CastbarFrame:SetSize(self:GetWidth(),15)
+		self.CastbarFrame:SetSize(P_HEALTH_WIDTH ,15)
 		self.CastbarFrame:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
 		self.CastbarFrame:SetBackdrop(BACKDROP)
 		self.CastbarFrame:SetBackdropColor(0,0,0)
@@ -252,24 +296,31 @@ local UnitSpecific = {
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
 		-- Register with oUF
+		self:SetWidth(S_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
 		self.Castbar.Text = SpellText
 	end,
 
 	focus = function(self)
-		self:SetSize(100,36)
-		self.Health:SetHeight(25)
-		self.Power:SetHeight(10)
+		self.Health:SetWidth(S_HEALTH_WIDTH)
+		self.Health:SetHeight(P_HEALTH_HEIGHT)
+		self.Power:SetWidth(S_HEALTH_WIDTH)
+		self.Power:SetHeight(P_POWER_HEIGHT)
 
-		-- Text Tags settings
-		self.NameText:SetPoint("TOP",self.Health,"TOP",0,-1)
-		self.NameText:SetJustifyH("LEFT")
+		-- Health Tags position and settings
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, -1)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-0)
 
-		-- Health Tags settings
-		self.HealthPer:SetPoint("RIGHT",self.Health,"BOTTOMRIGHT",-1,6)
-		self.HealthPer:SetJustifyH("RIGHT")
+		-- Power Tags position and settings
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
+
+		-- Level & Name Tag
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,1)
+		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
 
 		-- Castbar
-		self.CastbarFrame:SetSize(self:GetWidth(),15)
+		self.CastbarFrame:SetSize(P_HEALTH_WIDTH ,15)
 		self.CastbarFrame:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
 		self.CastbarFrame:SetBackdrop(BACKDROP)
 		self.CastbarFrame:SetBackdropColor(0,0,0)
@@ -278,6 +329,8 @@ local UnitSpecific = {
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
 		-- Register with oUF
+		self:SetWidth(S_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
 		self.Castbar.Text = SpellText
 	end,
 };
@@ -289,7 +342,6 @@ local function Shared(self, unit)
 
 	--create health statusbar func
 	local Health = CreateFrame("StatusBar", nil, self)
-	Health:SetHeight(10)
 	Health:SetPoint("BOTTOM")
 	Health:SetPoint("LEFT")
 	Health:SetPoint("RIGHT")
@@ -322,21 +374,17 @@ local function Shared(self, unit)
 	textSeparator:SetTextColor(1, 1, 1)
 	textSeparator:SetText("|")
 	local HealthValue = Health:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
-	HealthValueiSetTextColor(1, 1, 1)
+	HealthValue:SetTextColor(1, 1, 1)
 	local HealthPer = Health:CreateFontString(nil,"OVERLAY","DejaVuTextNormalRight")
 	HealthPer:SetTextColor(1,1,1)
 	self.HealthValue = HealthValue
 	self.HealthPer = HealthPer
-	self.Health.textSeparator = textSeparator
+	Health.textSeparator = textSeparator
 	self:Tag(self.HealthPer,"[grumpy:hpper]")
 	self:Tag(self.HealthValue, "[grumpy:shorthp]")
 
 	-- Position and size
 	local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetHeight(10)
-	Power:SetPoint("TOP")
-	Power:SetPoint("LEFT")
-	Power:SetPoint("RIGHT")
 	Power:SetStatusBarTexture(TEXTURE)
 	Power:SetStatusBarColor(1,0,1)
 
