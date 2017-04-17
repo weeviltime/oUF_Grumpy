@@ -13,7 +13,6 @@ local P_POWER_HEIGHT = 7
 local S_HEALTH_WIDTH = 150
 local S_POWER_WIDTH = 50
 
-
 -- Functions
 local function PostCreateAura(self, button)
 	-- I have to thank P3lim, creator of oUF_P3lim
@@ -38,11 +37,27 @@ local function PostCreateAura(self, button)
 	button.icon:SetTexCoord(.06,.94,.06,.94)
 end
 
+local function PostHealPrediction(self, unit)
+	local totalAbsorb = UnitGetTotalAbsorbs(unit)
+	local maxHealth = UnitHealthMax(unit)
+	self.absorbBar:SetMinMaxValues(0, maxHealth)
+	self.absorbBar:SetValue(totalAbsorb)
+	self.absorbBar:Show()
+end
+
 local UnitSpecific = {
 	player = function(self)
 		-- Health
 		self.Health:SetWidth(P_HEALTH_WIDTH)
 		self.Health:SetHeight(P_HEALTH_HEIGHT)
+
+		-- Absorbs
+		local absorbBar = CreateFrame('StatusBar', nil, self.Health)
+   	absorbBar:SetPoint('TOPLEFT', self.Health, 'TOPLEFT', 0, 0)
+		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
+		absorbBar:SetStatusBarTexture(TEXTURE)
+		absorbBar:SetWidth(P_HEALTH_WIDTH)
+		absorbBar:SetHeight(P_HEALTH_HEIGHT / 3)
 
 		-- Power
 		self.Power:SetWidth(P_POWER_WIDTH)
@@ -128,17 +143,16 @@ local UnitSpecific = {
 			self.ClassIcons = ClassIcons
 		end
 		if(playerClass == "MONK") then
-			local Stagger = CreateFrame("StatusBar",nil,self)
-			Stagger:SetSize(200,5)
-			Stagger:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
+			local Stagger = CreateFrame("StatusBar",nil,self.Health)
+			Stagger:SetHeight(P_HEALTH_HEIGHT / 3)
+			Stagger:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,0)
+			Stagger:SetPoint("TOPRIGHT", self.Health)
 			Stagger:SetStatusBarTexture(TEXTURE)
-			Stagger:SetBackdrop(BACKDROP)
-			Stagger:SetBackdropColor(0,0,0)
 			self.Stagger = Stagger
 		elseif(playerClass == "SHAMAN" or playerClass == "PRIEST" or playerClass == "DRUID") then
 			local ManaBar = CreateFrame("StatusBar",nil,self)
 			ManaBar:SetSize(P_POWER_WIDTH, P_POWER_HEIGHT)
-			ManaBar:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
+			ManaBar:SetPoint("RIGHT",self.Power,"LEFT",-1,0)
 			ManaBar:SetStatusBarTexture(TEXTURE)
 			ManaBar:SetBackdrop(BACKDROP)
 			ManaBar:SetBackdropColor(0,0,0)
@@ -169,9 +183,17 @@ local UnitSpecific = {
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
 		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
+    self.HealPrediction = {
+        --myBar = myBar,
+        --otherBar = otherBar,
+        --healAbsorbBar = healAbsorbBar,
+        absorbBar = absorbBar,
+        maxOverflow = 1.0,
+        frequentUpdates = true
+		}
+		self.HealPrediction.PostUpdate = PostHealPrediction
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
-		--self.Portrait = PortraitModel
 		self.Castbar.Time = TimeText
 		self.Castbar.Text = SpellText
 		self.Castbar.Icon = SpellIcon
@@ -199,7 +221,7 @@ local UnitSpecific = {
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
 		Debuffs:SetSize(200,48)
-		Debuffs.size = ICONSIZE
+		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs.onlyShowPlayer = true
 		Debuffs["growth-x"] = "LEFT"
@@ -347,12 +369,14 @@ local function Shared(self, unit)
 	Health:SetPoint("RIGHT")
 	Health:SetStatusBarTexture(TEXTURE)
 	Health:SetStatusBarColor(0.2, 0.2, 0.2)
+	Health:SetBackdrop(BACKDROP)
+	Health:SetBackdropColor(0, 0, 0)
 
 	-- Health Options
 	Health.frequentUpdates = true
 	Health.colorTapping = true
 	Health.colorDisconnected = true
-	Health.colorClass = false
+	Health.colorClass = true
 	Health.colorClassNPC = false
 	Health.colorReaction = false
 	Health.colorHealth = false
@@ -383,9 +407,11 @@ local function Shared(self, unit)
 	self:Tag(self.HealthPer,"[grumpy:hpper]")
 	self:Tag(self.HealthValue, "[grumpy:shorthp]")
 
-	-- Position and size
+	-- Power
 	local Power = CreateFrame("StatusBar", nil, self)
 	Power:SetStatusBarTexture(TEXTURE)
+	Power:SetBackdrop(BACKDROP)
+	Power:SetBackdropColor(0, 0, 0)
 	Power:SetStatusBarColor(1,0,1)
 
 	-- Options
@@ -433,8 +459,8 @@ oUF:Factory(function(self)
 	oUF:SetActiveStyle("Grumpy")
 
 	--Spawn more OVERLORDS
-	oUF:Spawn("player"):SetPoint("CENTER",-250,-140)
-	oUF:Spawn("target"):SetPoint("CENTER",250,-140)
+	oUF:Spawn("player"):SetPoint("CENTER",0,-140)
+	oUF:Spawn("target"):SetPoint("CENTER",0,300)
 	oUF:Spawn("targettarget"):SetPoint("TOPLEFT",oUF_GrumpyTarget,"TOPRIGHT",1,0)
 	oUF:Spawn("focus"):SetPoint("TOPRIGHT",oUF_GrumpyPlayer,"TOPLEFT",-1,0)
 --[[ Something I intend to add later, this was a test (and a succesfull one)
