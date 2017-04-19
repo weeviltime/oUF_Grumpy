@@ -23,10 +23,9 @@ end
 oUF.Tags.Methods["grumpy:shortpp"] = function(unit)
 	if(UnitIsDead(unit) or UnitIsGhost(unit)) then return end
 
-	local cur = UnitPower(unit)
-	if(cur > 0) then
-		return NumberFormat(cur)
-	end
+	local cur = UnitPower(unit) or 0
+
+	return NumberFormat(cur)
 end
 
 oUF.Tags.Methods["grumpy:hpper"] = function(unit)

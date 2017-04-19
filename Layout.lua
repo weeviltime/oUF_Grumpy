@@ -38,7 +38,7 @@ local function PostCreateAura(self, button)
 end
 
 local function PostHealPrediction(self, unit)
-	local totalAbsorb = UnitGetTotalAbsorbs(unit)
+	local totalAbsorb = UnitGetTotalAbsorbs(unit) or 0
 	local maxHealth = UnitHealthMax(unit)
 	self.absorbBar:SetMinMaxValues(0, maxHealth)
 	self.absorbBar:SetValue(totalAbsorb)
@@ -70,7 +70,7 @@ local UnitSpecific = {
 		Buffs:SetHeight(ICON_SIZE * 2)
 		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
-		Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 7)
+		Buffs:SetPoint("BOTTOMRIGHT", self.PowerValue, "TOPRIGHT", 0, 1)
 		Buffs.PostCreateIcon = PostCreateAura
 
 		-- Debuffs
@@ -79,20 +79,20 @@ local UnitSpecific = {
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs["growth-y"] = "DOWN"
-		Debuffs:SetPoint("TOPRIGHT",self.Totems,"BOTTOMRIGHT",0,-2)
+		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 0)
-		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 0)
-		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,0)
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 1)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-1)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 0)
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
 
 		-- Level & Name Tag
 		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,1)
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -111,14 +111,15 @@ local UnitSpecific = {
 		]]
 
 		-- Castbar
-		self.CastbarFrame:SetSize(300,30)
-		self.CastbarFrame:SetPoint("CENTER",UIParent,"CENTER",0,-220)
+		self.CastbarFrame:SetWidth(P_HEALTH_WIDTH)
+		self.CastbarFrame:SetHeight(P_HEALTH_HEIGHT * 2)
+		self.CastbarFrame:SetPoint("TOPLEFT",self.LevelText,"BOTTOMLEFT",0,-2)
 
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
 		SpellIcon:SetPoint("TOP",self.CastbarFrame)
 		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
-		SpellIcon:SetWidth(self.CastbarFrame:GetHeight())
+		SpellIcon:SetWidth(P_HEALTH_HEIGHT * 2)
 		SpellIcon:SetTexCoord(.06,.94,.06,.94)
 
 		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
@@ -204,6 +205,14 @@ local UnitSpecific = {
 		self.Health:SetWidth(P_HEALTH_WIDTH)
 		self.Health:SetHeight(P_HEALTH_HEIGHT)
 
+		-- Absorbs
+		local absorbBar = CreateFrame('StatusBar', nil, self.Health)
+   	absorbBar:SetPoint('TOPLEFT', self.Health, 'TOPLEFT', 0, 0)
+		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
+		absorbBar:SetStatusBarTexture(TEXTURE)
+		absorbBar:SetWidth(P_HEALTH_WIDTH)
+		absorbBar:SetHeight(P_HEALTH_HEIGHT / 3)
+
 		-- Power
 		self.Power:SetWidth(P_POWER_WIDTH)
 		self.Power:SetHeight(P_POWER_HEIGHT)
@@ -215,32 +224,29 @@ local UnitSpecific = {
 		Buffs:SetHeight(ICON_SIZE * 2)
 		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
-		Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 7)
+		Buffs:SetPoint("BOTTOMRIGHT", self.PowerValue, "TOPRIGHT", 0, 1)
 		Buffs.PostCreateIcon = PostCreateAura
 
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
-		Debuffs:SetSize(200,48)
+		Debuffs:SetWidth(P_HEALTH_WIDTH)
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
-		Debuffs.onlyShowPlayer = true
-		Debuffs["growth-x"] = "LEFT"
 		Debuffs["growth-y"] = "DOWN"
-		Debuffs.initialAnchor = "TOPRIGHT"
-		Debuffs:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,-2)
+		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 0)
-		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 0)
-		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,0)
+		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 1)
+		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-1)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 0)
+		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
 
 		-- Level & Name Tag
 		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,1)
+		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
 
 		--[[ 3D Portrait
 		-- Position and size
@@ -259,19 +265,26 @@ local UnitSpecific = {
 		]]
 
 		-- Castbar
-		self.CastbarFrame:SetSize(300,30)
-		self.CastbarFrame:SetPoint("BOTTOM",oUF_GrumpyPlayer.CastbarFrame,"TOP",0,1)
+		self.CastbarFrame:SetWidth(P_HEALTH_WIDTH)
+		self.CastbarFrame:SetHeight(P_HEALTH_HEIGHT * 2)
+		self.CastbarFrame:SetPoint("TOPLEFT",self.LevelText,"BOTTOMLEFT",0,-2)
+
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
-		SpellIcon:SetSize(30,30)
-		SpellIcon:SetPoint("TOPLEFT",self.CastbarFrame,"TOPLEFT")
+		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
+		SpellIcon:SetPoint("TOP",self.CastbarFrame)
+		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
+		SpellIcon:SetWidth(P_HEALTH_HEIGHT * 2)
+		SpellIcon:SetTexCoord(.06,.94,.06,.94)
+
+		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
+		TimeText:SetPoint("RIGHT", self.Castbar,-1,0)
+
+		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
+		SpellText:SetPoint("LEFT",self.Castbar,1,0)
+
 		self.Castbar:SetPoint("TOP",self.CastbarFrame)
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
 		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
-		--self.Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
-		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
-		TimeText:SetPoint("RIGHT", self.Castbar,1,0)
-		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
-		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
 		-- Quest Icon
 		local QuestIcon = self:CreateTexture(nil,"OVERLAY")
@@ -281,6 +294,15 @@ local UnitSpecific = {
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
 		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
+    self.HealPrediction = {
+        --myBar = myBar,
+        --otherBar = otherBar,
+        --healAbsorbBar = healAbsorbBar,
+        absorbBar = absorbBar,
+        maxOverflow = 1.0,
+        frequentUpdates = true
+		}
+		self.HealPrediction.PostUpdate = PostHealPrediction
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		--self.Portrait = PortraitModel
