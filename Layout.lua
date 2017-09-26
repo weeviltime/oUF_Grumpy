@@ -37,13 +37,14 @@ local function PostCreateAura(self, button)
 	button.icon:SetTexCoord(.06,.94,.06,.94)
 end
 
-local function PostHealPrediction(self, unit)
+-- To test later, abosrb over health, not working properly
+--[[local function PostHealthPrediction(self, unit)
 	local totalAbsorb = UnitGetTotalAbsorbs(unit) or 0
 	local maxHealth = UnitHealthMax(unit)
 	self.absorbBar:SetMinMaxValues(0, maxHealth)
 	self.absorbBar:SetValue(totalAbsorb)
 	self.absorbBar:Show()
-end
+end]]
 
 local UnitSpecific = {
 	player = function(self)
@@ -52,8 +53,8 @@ local UnitSpecific = {
 		self.Health:SetHeight(P_HEALTH_HEIGHT)
 
 		-- Absorbs
-		local absorbBar = CreateFrame('StatusBar', nil, self.Health)
-   	absorbBar:SetPoint('TOPLEFT', self.Health, 'TOPLEFT', 0, 0)
+		local absorbBar = CreateFrame("StatusBar", nil, self.Health)
+   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
 		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
 		absorbBar:SetStatusBarTexture(TEXTURE)
 		absorbBar:SetWidth(P_HEALTH_WIDTH)
@@ -76,9 +77,11 @@ local UnitSpecific = {
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
 		Debuffs:SetWidth(P_HEALTH_WIDTH)
+		Debuffs:SetHeight(ICON_SIZE * 2)
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs["growth-y"] = "DOWN"
+		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
 		Debuffs.PostCreateIcon = PostCreateAura
 
@@ -184,7 +187,7 @@ local UnitSpecific = {
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
 		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
-    self.HealPrediction = {
+    self.HealthPrediction = {
         --myBar = myBar,
         --otherBar = otherBar,
         --healAbsorbBar = healAbsorbBar,
@@ -192,7 +195,7 @@ local UnitSpecific = {
         maxOverflow = 1.0,
         frequentUpdates = true
 		}
-		self.HealPrediction.PostUpdate = PostHealPrediction
+		self.HealthPrediction.PostUpdate = PostHealthPrediction
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		self.Castbar.Time = TimeText
@@ -206,8 +209,8 @@ local UnitSpecific = {
 		self.Health:SetHeight(P_HEALTH_HEIGHT)
 
 		-- Absorbs
-		local absorbBar = CreateFrame('StatusBar', nil, self.Health)
-   	absorbBar:SetPoint('TOPLEFT', self.Health, 'TOPLEFT', 0, 0)
+		local absorbBar = CreateFrame("StatusBar", nil, self.Health)
+   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
 		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
 		absorbBar:SetStatusBarTexture(TEXTURE)
 		absorbBar:SetWidth(P_HEALTH_WIDTH)
@@ -230,10 +233,12 @@ local UnitSpecific = {
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
 		Debuffs:SetWidth(P_HEALTH_WIDTH)
+		Debuffs:SetHeight(ICON_SIZE * 2)
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
+		Debuffs.onlyShowPlayer = true
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
@@ -255,7 +260,7 @@ local UnitSpecific = {
 		-- Another reason could be, Frames attached to another Frame will try to always put that
 		-- pixel on the exact location disregarding BACKDROP. I made a test with 2 frames (one background and the 3D layer)
 		-- the 3D layer always was attached to the background on Left and Top, the BottomRight of background was attached
-		-- to BottomLeft of Player Frame. It didn't work, always one or 2 sides were without 1 pixel.
+		-- to BottomLeft of Player Frame. It didn"t work, always one or 2 sides were without 1 pixel.
 		local PortraitModel = CreateFrame("PlayerModel",nil,self)
 		PortraitModel:SetWidth(99.5)
 		PortraitModel:SetHeight(149.5)
@@ -294,7 +299,7 @@ local UnitSpecific = {
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
 		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
-    self.HealPrediction = {
+    self.HealthPrediction = {
         --myBar = myBar,
         --otherBar = otherBar,
         --healAbsorbBar = healAbsorbBar,
@@ -302,7 +307,7 @@ local UnitSpecific = {
         maxOverflow = 1.0,
         frequentUpdates = true
 		}
-		self.HealPrediction.PostUpdate = PostHealPrediction
+		--self.HealthPrediction.PostUpdate = PostHealthPrediction
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		--self.Portrait = PortraitModel
@@ -331,10 +336,8 @@ local UnitSpecific = {
 		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
 
 		-- Castbar
-		self.CastbarFrame:SetSize(P_HEALTH_WIDTH ,15)
-		self.CastbarFrame:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
-		self.CastbarFrame:SetBackdrop(BACKDROP)
-		self.CastbarFrame:SetBackdropColor(0,0,0)
+		self.CastbarFrame:SetSize(S_HEALTH_WIDTH ,15)
+		self.CastbarFrame:SetPoint("BOTTOMLEFT",self.NameText,"TOPLEFT",0,1)
 		self.Castbar:SetAllPoints(self.CastbarFrame)
 		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
@@ -364,10 +367,8 @@ local UnitSpecific = {
 		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
 
 		-- Castbar
-		self.CastbarFrame:SetSize(P_HEALTH_WIDTH ,15)
-		self.CastbarFrame:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,1)
-		self.CastbarFrame:SetBackdrop(BACKDROP)
-		self.CastbarFrame:SetBackdropColor(0,0,0)
+		self.CastbarFrame:SetSize(S_HEALTH_WIDTH ,15)
+		self.CastbarFrame:SetPoint("BOTTOMLEFT",self.NameText,"TOPLEFT",0,1)
 		self.Castbar:SetAllPoints(self.CastbarFrame)
 		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
@@ -376,6 +377,18 @@ local UnitSpecific = {
 		self:SetWidth(S_HEALTH_WIDTH)
 		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
 		self.Castbar.Text = SpellText
+	end,
+
+	party = function(self)
+		local ReadyCheck = self:CreateTexture(nil,"OVERLAY")
+		ReadyCheck:SetPoint("CENTER", self, "CENTER", 0, 0)
+		ReadyCheck:SetSize(15,15)
+		
+		local RoleIcon = self.CreateTexture(nil, "OVERLAY")
+		RoleIcon:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+		RoleIcon:SetSize(10,10)
+
+
 	end,
 };
 
@@ -456,11 +469,13 @@ local function Shared(self, unit)
 	Castbar:SetFrameStrata("LOW")
 	Castbar:SetStatusBarTexture(TEXTURE)
 	Castbar:SetStatusBarColor(0.2,0.2,0.2,1)
+	Castbar:SetBackdrop(BACKDROP)
+	Castbar:SetBackdropColor(0, 0, 0)
 
-	local CastbarFrame = CreateFrame("Frame",nil,Castbar)
-	CastbarFrame:SetFrameStrata("BACKGROUND")
-	CastbarFrame:SetBackdrop(BACKDROP)
-	CastbarFrame:SetBackdropColor(0,0,0)
+	local CastbarFrame = CreateFrame("Frame",nil,self)
+	--CastbarFrame:SetFrameStrata("BACKGROUND")
+	--CastbarFrame:SetBackdrop(BACKDROP)
+	--CastbarFrame:SetBackdropColor(0,0,0)
 
 	-- Registiring everything
 	self.Health = Health
