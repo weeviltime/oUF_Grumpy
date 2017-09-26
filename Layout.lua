@@ -6,12 +6,14 @@ local BACKDROP = {
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 local ICON_SIZE = 30
-local P_HEALTH_WIDTH = 350
-local P_HEALTH_HEIGHT = 10
-local P_POWER_WIDTH = 100
-local P_POWER_HEIGHT = 7
+local P_HEALTH_WIDTH = 250
+local P_HEALTH_HEIGHT = 30
+local P_POWER_WIDTH = 250
+local P_POWER_HEIGHT = 15
 local S_HEALTH_WIDTH = 150
-local S_POWER_WIDTH = 50
+local S_HEALTH_HEIGHT = 30
+local S_POWER_WIDTH = 150
+local S_POWER_HEIGHT = 10
 
 -- Functions
 local function PostCreateAura(self, button)
@@ -48,31 +50,55 @@ end]]
 
 local UnitSpecific = {
 	player = function(self)
+	  -- Unit
+		self:SetWidth(P_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT)
+
 		-- Health
+		self.Health:SetPoint("TOPLEFT",self,"TOPLEFT",0,0)
 		self.Health:SetWidth(P_HEALTH_WIDTH)
 		self.Health:SetHeight(P_HEALTH_HEIGHT)
 
-		-- Absorbs
+		--[[ Absorbs
 		local absorbBar = CreateFrame("StatusBar", nil, self.Health)
-   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
+   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 0, 0)
 		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
 		absorbBar:SetStatusBarTexture(TEXTURE)
+		absorbBar:SetBackdrop(BACKDROP)
 		absorbBar:SetWidth(P_HEALTH_WIDTH)
-		absorbBar:SetHeight(P_HEALTH_HEIGHT / 3)
+		absorbBar:SetHeight(P_HEALTH_HEIGHT)]]
 
 		-- Power
 		self.Power:SetWidth(P_POWER_WIDTH)
 		self.Power:SetHeight(P_POWER_HEIGHT)
-		self.Power:SetPoint("BOTTOMRIGHT",self.Health,"TOPRIGHT",0, 1)
+		self.Power:SetPoint("CENTER",nil,0,-240)
 
-		-- Buffs
+		-- Additional Power
+		local AdditionalPower = CreateFrame("StatusBar", nil, self)
+		AdditionalPower:SetWidth(P_POWER_WIDTH)
+		AdditionalPower:SetHeight(P_POWER_HEIGHT)
+		AdditionalPower:SetPoint("BOTTOMLEFT",self.Power,"TOPLEFT",0,5)
+		AdditionalPower:SetBackdrop(BACKDROP)
+		AdditionalPower:SetStatusBarTexture(TEXTURE)
+		AdditionalPower:SetBackdropColor(0,0,0)
+		AdditionalPower:SetStatusBarColor(0,.75,.1)
+		if(playerClass == "MONK") then
+			self.Stagger = AdditionalPower
+		elseif(playerClass == "SHAMAN" or playerClass == "PRIEST" or playerClass == "DRUID") then
+			AdditionalPower.colorPower = true
+			self.AdditionalPower = AdditionalPower
+		elseif(playerClass == "WARRIOR") then
+		-- Wanna do this Additional bar as Ignore Pain absorb.
+		end
+
+		--[[ Buffs
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs:SetWidth(P_HEALTH_WIDTH)
 		Buffs:SetHeight(ICON_SIZE * 2)
 		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
 		Buffs:SetPoint("BOTTOMRIGHT", self.PowerValue, "TOPRIGHT", 0, 1)
-		Buffs.PostCreateIcon = PostCreateAura
+		Buffs.PostCreateIcon = PostCreateAura]]
 
 		-- Debuffs
 		local Debuffs = CreateFrame("Frame",nil,self)
@@ -80,49 +106,31 @@ local UnitSpecific = {
 		Debuffs:SetHeight(ICON_SIZE * 2)
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
-		Debuffs["growth-y"] = "DOWN"
-		Debuffs.initialAnchor = "TOPLEFT"
-		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
+		Debuffs["growth-y"] = "UP"
+		Debuffs.initialAnchor = "BOTTOMLEFT"
+		Debuffs:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,1)
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 1)
-		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-1)
+		self.HealthValue:SetPoint("CENTER", self, "CENTER", 0, 0)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
+		self.PowerValue:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 
 		-- Level & Name Tag
-		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
-
-		--[[ 3D Portrait
-		-- Position and size
-		-- Due how resolution and pixels works in WoW, I had to SetPoint disjointed from
-		-- the oUF Frame. Otherwise there would always be a side without the pixel border.
-		-- Another reason could be, Frames attached to another Frame will try to always put that
-		-- pixel on the exact location disregarding BACKDROP. I made a test with 2 frames (one background and the 3D layer)
-		-- the 3D layer always was attached to the background on Left and Top, the BottomRight of background was attached
-		-- to BottomLeft of Player Frame. It didn"t work, always one or 2 sides were without 1 pixel.
-		local PortraitModel = CreateFrame("PlayerModel",nil,self)
-		PortraitModel:SetWidth(99.5)
-		PortraitModel:SetHeight(149.5)
-		PortraitModel:SetBackdrop(BACKDROP)
-		PortraitModel:SetBackdropColor(0,0,0)
-		PortraitModel:SetPoint("CENTER",nil,"CENTER",-401,-90)
-		]]
+		self.NameText:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0, -1)
+		--self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
 
 		-- Castbar
-		self.CastbarFrame:SetWidth(P_HEALTH_WIDTH)
-		self.CastbarFrame:SetHeight(P_HEALTH_HEIGHT * 2)
-		self.CastbarFrame:SetPoint("TOPLEFT",self.LevelText,"BOTTOMLEFT",0,-2)
+		self.CastbarFrame:SetWidth(P_POWER_WIDTH)
+		self.CastbarFrame:SetHeight(P_POWER_HEIGHT)
+		self.CastbarFrame:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0,-1)
 
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
 		SpellIcon:SetPoint("TOP",self.CastbarFrame)
 		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
-		SpellIcon:SetWidth(P_HEALTH_HEIGHT * 2)
+		SpellIcon:SetWidth(P_HEALTH_HEIGHT)
 		SpellIcon:SetTexCoord(.06,.94,.06,.94)
 
 		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
@@ -135,6 +143,7 @@ local UnitSpecific = {
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
 		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
 
+		-- Gotta think something better for this.
 		if(playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "MONK") then
 			local ClassIcons = {}
 			for index = 1, 6 do
@@ -146,23 +155,7 @@ local UnitSpecific = {
 			end
 			self.ClassIcons = ClassIcons
 		end
-		if(playerClass == "MONK") then
-			local Stagger = CreateFrame("StatusBar",nil,self.Health)
-			Stagger:SetHeight(P_HEALTH_HEIGHT / 3)
-			Stagger:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,0)
-			Stagger:SetPoint("TOPRIGHT", self.Health)
-			Stagger:SetStatusBarTexture(TEXTURE)
-			self.Stagger = Stagger
-		elseif(playerClass == "SHAMAN" or playerClass == "PRIEST" or playerClass == "DRUID") then
-			local ManaBar = CreateFrame("StatusBar",nil,self)
-			ManaBar:SetSize(P_POWER_WIDTH, P_POWER_HEIGHT)
-			ManaBar:SetPoint("RIGHT",self.Power,"LEFT",-1,0)
-			ManaBar:SetStatusBarTexture(TEXTURE)
-			ManaBar:SetBackdrop(BACKDROP)
-			ManaBar:SetBackdropColor(0,0,0)
-			ManaBar.colorPower = true
-			self.AdditionalPower = ManaBar
-		end
+
 
 		-- TODO: Totems
 		local Totems = {}
@@ -170,7 +163,7 @@ local UnitSpecific = {
 			-- Position and size of the totem indicator
 			local Totem = CreateFrame("BUTTON", nil, self)
 			Totem:SetSize(25, 25)
-			Totem:SetPoint("TOPLEFT", self.LevelText, "BOTTOMLEFT", index * Totem:GetWidth(), 0)
+			Totem:SetPoint("TOPLEFT", self, "BOTTOMLEFT", index * Totem:GetWidth(), 0)
 
 			local Icon = Totem:CreateTexture(nil, "OVERLAY")
 			Icon:SetAllPoints()
@@ -186,17 +179,17 @@ local UnitSpecific = {
 
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
-		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
+		self:SetHeight(P_HEALTH_HEIGHT)
     self.HealthPrediction = {
         --myBar = myBar,
         --otherBar = otherBar,
         --healAbsorbBar = healAbsorbBar,
-        absorbBar = absorbBar,
+        --absorbBar = absorbBar,
         maxOverflow = 1.0,
         frequentUpdates = true
 		}
-		self.HealthPrediction.PostUpdate = PostHealthPrediction
-		self.Buffs = Buffs
+		--self.HealthPrediction.PostUpdate = PostHealthPrediction
+		--self.Buffs = Buffs
 		self.Debuffs = Debuffs
 		self.Castbar.Time = TimeText
 		self.Castbar.Text = SpellText
@@ -204,22 +197,28 @@ local UnitSpecific = {
  end,
 
  target = function(self)
-		-- Health
-		self.Health:SetWidth(P_HEALTH_WIDTH)
-		self.Health:SetHeight(P_HEALTH_HEIGHT)
+	  -- Unit
+		self:SetWidth(P_HEALTH_WIDTH)
+		self:SetHeight(P_HEALTH_HEIGHT)
 
-		-- Absorbs
+		-- Health
+		self.Health:SetPoint("TOPLEFT",self,"TOPLEFT",0,0)
+		self.Health:SetWidth(P_HEALTH_WIDTH)
+		self.Health:SetHeight(P_HEALTH_HEIGHT - S_POWER_HEIGHT + 1)
+
+		--[[ Absorbs
 		local absorbBar = CreateFrame("StatusBar", nil, self.Health)
-   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
+   	absorbBar:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 0, 0)
 		absorbBar:SetFrameLevel(self.Health:GetFrameLevel() + 1)
 		absorbBar:SetStatusBarTexture(TEXTURE)
+		absorbBar:SetBackdrop(BACKDROP)
 		absorbBar:SetWidth(P_HEALTH_WIDTH)
-		absorbBar:SetHeight(P_HEALTH_HEIGHT / 3)
+		absorbBar:SetHeight(P_HEALTH_HEIGHT)]]
 
 		-- Power
 		self.Power:SetWidth(P_POWER_WIDTH)
-		self.Power:SetHeight(P_POWER_HEIGHT)
-		self.Power:SetPoint("BOTTOMRIGHT",self.Health,"TOPRIGHT",0, 1)
+		self.Power:SetHeight(S_POWER_HEIGHT - 3)
+		self.Power:SetPoint("BOTTOMLEFT",self,"BOTTOMLEFT",0, 1)
 
 		-- Buffs
 		local Buffs = CreateFrame("Frame", nil, self)
@@ -227,7 +226,7 @@ local UnitSpecific = {
 		Buffs:SetHeight(ICON_SIZE * 2)
 		Buffs.size = ICON_SIZE
 		Buffs.spacing = 2
-		Buffs:SetPoint("BOTTOMRIGHT", self.PowerValue, "TOPRIGHT", 0, 1)
+		Buffs:SetPoint("TOPRIGHT", self.CastbarFrame, "BOTTOMRIGHT", 0, -1)
 		Buffs.PostCreateIcon = PostCreateAura
 
 		-- Debuffs
@@ -236,49 +235,33 @@ local UnitSpecific = {
 		Debuffs:SetHeight(ICON_SIZE * 2)
 		Debuffs.size = ICON_SIZE
 		Debuffs.spacing = 2
-		Debuffs["growth-y"] = "DOWN"
-		Debuffs:SetPoint("TOPRIGHT",self.CastbarFrame,"BOTTOMRIGHT",0,-1)
+		Debuffs["growth-y"] = "UP"
+		Debuffs:SetPoint("BOTTOMLEFT",self.NameText,"TOPLEFT",0,1)
 		Debuffs.onlyShowPlayer = true
 		Debuffs.PostCreateIcon = PostCreateAura
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 1)
-		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-1)
+		self.HealthValue:SetPoint("CENTER", self, "CENTER", 0, 0)
+		--self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, 1)
+		self.HealthPer:SetPoint("RIGHT",self,"RIGHT",0,0)
 
 		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
+		--self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
 
 		-- Level & Name Tag
-		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
-
-		--[[ 3D Portrait
-		-- Position and size
-		-- Due how resolution and pixels works in WoW, I had to SetPoint disjointed from
-		-- the oUF Frame. Otherwise there would always be a side without the pixel border.
-		-- Another reason could be, Frames attached to another Frame will try to always put that
-		-- pixel on the exact location disregarding BACKDROP. I made a test with 2 frames (one background and the 3D layer)
-		-- the 3D layer always was attached to the background on Left and Top, the BottomRight of background was attached
-		-- to BottomLeft of Player Frame. It didn"t work, always one or 2 sides were without 1 pixel.
-		local PortraitModel = CreateFrame("PlayerModel",nil,self)
-		PortraitModel:SetWidth(99.5)
-		PortraitModel:SetHeight(149.5)
-		PortraitModel:SetBackdrop(BACKDROP)
-		PortraitModel:SetBackdropColor(0,0,0)
-		PortraitModel:SetPoint("CENTER",nil,"CENTER",401,-90)
-		]]
+		self.NameText:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0, 1)
+		--self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
 
 		-- Castbar
 		self.CastbarFrame:SetWidth(P_HEALTH_WIDTH)
-		self.CastbarFrame:SetHeight(P_HEALTH_HEIGHT * 2)
-		self.CastbarFrame:SetPoint("TOPLEFT",self.LevelText,"BOTTOMLEFT",0,-2)
+		self.CastbarFrame:SetHeight(P_HEALTH_HEIGHT)
+		self.CastbarFrame:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0,-1)
 
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
-		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
+		SpellIcon:SetPoint("RIGHT",self.CastbarFrame)
 		SpellIcon:SetPoint("TOP",self.CastbarFrame)
 		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
-		SpellIcon:SetWidth(P_HEALTH_HEIGHT * 2)
+		SpellIcon:SetWidth(P_HEALTH_HEIGHT)
 		SpellIcon:SetTexCoord(.06,.94,.06,.94)
 
 		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
@@ -288,8 +271,9 @@ local UnitSpecific = {
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
 		self.Castbar:SetPoint("TOP",self.CastbarFrame)
-		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
-		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
+		self.Castbar:SetPoint("RIGHT",SpellIcon,"LEFT")
+		self.Castbar:SetPoint("LEFT",self.CastbarFrame)
+		self.Castbar:SetWidth(P_HEALTH_WIDTH - P_HEALTH_HEIGHT - 1)
 
 		-- Quest Icon
 		local QuestIcon = self:CreateTexture(nil,"OVERLAY")
@@ -298,19 +282,18 @@ local UnitSpecific = {
 
 		-- Register with oUF
 		self:SetWidth(P_HEALTH_WIDTH)
-		self:SetHeight(P_HEALTH_HEIGHT + P_POWER_HEIGHT + 1)
+		self:SetHeight(P_HEALTH_HEIGHT)
     self.HealthPrediction = {
         --myBar = myBar,
         --otherBar = otherBar,
         --healAbsorbBar = healAbsorbBar,
-        absorbBar = absorbBar,
+        --absorbBar = absorbBar,
         maxOverflow = 1.0,
         frequentUpdates = true
 		}
 		--self.HealthPrediction.PostUpdate = PostHealthPrediction
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
-		--self.Portrait = PortraitModel
 		self.Castbar.Time = TimeText
 		self.Castbar.Text = SpellText
 		self.Castbar.Icon = SpellIcon
@@ -399,9 +382,6 @@ local function Shared(self, unit)
 
 	--create health statusbar func
 	local Health = CreateFrame("StatusBar", nil, self)
-	Health:SetPoint("BOTTOM")
-	Health:SetPoint("LEFT")
-	Health:SetPoint("RIGHT")
 	Health:SetStatusBarTexture(TEXTURE)
 	Health:SetStatusBarColor(0.2, 0.2, 0.2)
 	Health:SetBackdrop(BACKDROP)
@@ -411,7 +391,7 @@ local function Shared(self, unit)
 	Health.frequentUpdates = true
 	Health.colorTapping = true
 	Health.colorDisconnected = true
-	Health.colorClass = true
+	Health.colorClass = false
 	Health.colorClassNPC = false
 	Health.colorReaction = false
 	Health.colorHealth = false
@@ -496,16 +476,9 @@ oUF:Factory(function(self)
 	oUF:SetActiveStyle("Grumpy")
 
 	--Spawn more OVERLORDS
-	oUF:Spawn("player"):SetPoint("CENTER",0,-140)
-	oUF:Spawn("target"):SetPoint("CENTER",0,300)
+	oUF:Spawn("player"):SetPoint("CENTER",UIParent,-300,-230)
+	oUF:Spawn("target"):SetPoint("CENTER",UIParent,300,-230)
 	oUF:Spawn("targettarget"):SetPoint("TOPLEFT",oUF_GrumpyTarget,"TOPRIGHT",1,0)
 	oUF:Spawn("focus"):SetPoint("TOPRIGHT",oUF_GrumpyPlayer,"TOPLEFT",-1,0)
---[[ Something I intend to add later, this was a test (and a succesfull one)
-local Model = CreateFrame("PlayerModel","model",oUF_GrumpyPlayer)
-Model:SetModel("SPELLS/Archimonde_blue_fire.m2")
-Model:SetPosition(0,0,4.05)
-Model:SetPoint("TOPLEFT",oUF_GrumpyPlayer.Power,"TOPLEFT",0,1)
-Model:SetPoint("BOTTOMRIGHT",oUF_GrumpyPlayer.Power,"BOTTOMRIGHT",0,1)
-]]
 end)
 

@@ -2,7 +2,7 @@
 ## Title: oUF: |c000b7bffGrumpy
 ## Notes: Grumpy is an oUF layout for grumpy people.
 ## Author: GrumpyShaman
-## Version: r95
+## Version: @project-version@
 ## Dependencies: oUF
 
 Fonts.xml

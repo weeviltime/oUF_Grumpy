@@ -1,3 +1,3 @@
 # Ignore any backup file.
 *.*~
-release.sh
+.release
