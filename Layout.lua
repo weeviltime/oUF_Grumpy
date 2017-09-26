@@ -89,6 +89,7 @@ local UnitSpecific = {
 			self.AdditionalPower = AdditionalPower
 		elseif(playerClass == "WARRIOR") then
 		-- Wanna do this Additional bar as Ignore Pain absorb.
+		--
 		end
 
 		--[[ Buffs
@@ -118,19 +119,21 @@ local UnitSpecific = {
 		self.PowerValue:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 
 		-- Level & Name Tag
-		self.NameText:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0, -1)
-		--self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
+		self.NameText:SetPoint("BOTTOM",self,"TOP",0, 1)
+		self.LevelText:SetPoint("RIGHT",self.NameText,"LEFT",-1,0)
 
 		-- Castbar
 		self.CastbarFrame:SetWidth(P_POWER_WIDTH)
-		self.CastbarFrame:SetHeight(P_POWER_HEIGHT)
-		self.CastbarFrame:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0,-1)
+		self.CastbarFrame:SetHeight(ICON_SIZE)
+		self.CastbarFrame:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0,-3)
 
 		local SpellIcon = self.Castbar:CreateTexture(nil,"OVERLAY")
 		SpellIcon:SetPoint("LEFT",self.CastbarFrame)
 		SpellIcon:SetPoint("TOP",self.CastbarFrame)
 		SpellIcon:SetPoint("BOTTOM",self.CastbarFrame)
-		SpellIcon:SetWidth(P_HEALTH_HEIGHT)
+		SpellIcon:SetWidth(ICON_SIZE)
+		SpellIcon:SetBackdrop(BACKDROP)
+		SpellIcon:SetBackdropColor(0,0,0)
 		SpellIcon:SetTexCoord(.06,.94,.06,.94)
 
 		local TimeText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
@@ -139,6 +142,8 @@ local UnitSpecific = {
 		local SpellText = self.Castbar:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
 		SpellText:SetPoint("LEFT",self.Castbar,1,0)
 
+		self.Castbar:SetBackdrop(BACKDROP)
+		self.Castbar:SetBackdropColor(0,0,0)
 		self.Castbar:SetPoint("TOP",self.CastbarFrame)
 		self.Castbar:SetPoint("RIGHT",self.CastbarFrame)
 		self.Castbar:SetPoint("LEFT",SpellIcon,"RIGHT",1,0)
@@ -249,8 +254,8 @@ local UnitSpecific = {
 		--self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
 
 		-- Level & Name Tag
-		self.NameText:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0, 1)
-		--self.LevelText:SetPoint("TOPLEFT",self.Health,"BOTTOMLEFT",0,-1)
+		self.NameText:SetPoint("BOTTOM",self,"TOP",0, 1)
+		self.LevelText:SetPoint("RIGHT",self.NameText,"LEFT",-1,0)
 
 		-- Castbar
 		self.CastbarFrame:SetWidth(P_HEALTH_WIDTH)
@@ -338,16 +343,12 @@ local UnitSpecific = {
 		self.Power:SetHeight(P_POWER_HEIGHT)
 
 		-- Health Tags position and settings
-		self.HealthValue:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Health.textSeparator:SetPoint("RIGHT", self.HealthValue, "LEFT", 0, -1)
-		self.HealthPer:SetPoint("RIGHT",self.Health.textSeparator,"LEFT",0,-0)
-
-		-- Power Tags position and settings
-		self.PowerValue:SetPoint("BOTTOMRIGHT", self.Power, "TOPRIGHT", 0, 1)
+		self.HealthValue:SetPoint("CENTER", self,0,0)
+		self.HealthPer:SetPoint("RIGHT",self,"RIGHT",-1,0)
 
 		-- Level & Name Tag
-		self.LevelText:SetPoint("TOPLEFT",self.Health,"TOPLEFT",0,1)
-		self.NameText:SetPoint("BOTTOMLEFT",self.Health,"TOPLEFT",0, 1)
+		self.LevelText:SetPoint("RIGHT",self.NameText,"LEFT",-1,0)
+		self.NameText:SetPoint("BOTTOM",self,"TOP",0, 1)
 
 		-- Castbar
 		self.CastbarFrame:SetSize(S_HEALTH_WIDTH ,15)
@@ -370,8 +371,6 @@ local UnitSpecific = {
 		local RoleIcon = self.CreateTexture(nil, "OVERLAY")
 		RoleIcon:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
 		RoleIcon:SetSize(10,10)
-
-
 	end,
 };
 
@@ -400,7 +399,7 @@ local function Shared(self, unit)
 	local LevelText = Health:CreateFontString(nil,"OVERLAY","DejaVuTextNormalLeft")
 	LevelText:SetTextColor(1,1,1)
 	self.LevelText = LevelText
-	self:Tag(self.LevelText,"[difficulty][level][shortclassification]")
+	self:Tag(self.LevelText,"([difficulty][level][shortclassification]|r)")
 	
 	-- Name Tag
 	local NameText = Health:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalLeft")
