@@ -4,9 +4,9 @@ enable-nolib-creation: no
 
 externals:
 	Embeds/oUF:
-		url: git://github.com/oUF-wow/oUF.git
+		url: https://github.com/oUF-wow/oUF.git
 	Embeds/oUF_IgnorePain:
-		url: git://github.com/Pobre/oUF_IgnorePain.git
+		url: https://github.com/Pobre/oUF_IgnorePain.git
 
 manual-changelog:
 	filename: CHANGELOG.md
