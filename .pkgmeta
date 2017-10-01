@@ -1,6 +1,13 @@
 package-as: oUF_Grumpy
 
-enable-nolib-creation: no
+externals:
+	Libs/oUF:
+		url: git://github.com/oUF-wow/oUF.git
+		tag: latest
+	Libs/oUF_IgnorePain
+
+
+enable-nolib-creation: yes
 
 manual-changelog:
 	filename: CHANGELOG.md

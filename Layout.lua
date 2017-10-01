@@ -88,8 +88,13 @@ local UnitSpecific = {
 			AdditionalPower.colorPower = true
 			self.AdditionalPower = AdditionalPower
 		elseif(playerClass == "WARRIOR") then
-		-- Wanna do this Additional bar as Ignore Pain absorb.
-		AdditionalPower:Hide()
+			-- Wanna do this Additional bar as Ignore Pain absorb.
+			self.IgnorePain = AdditionalPower
+			local PainValue = self.IgnorePain:CreateFontString(nil, "OVERLAY", "DejaVuTextNormalRight")
+			PainValue:SetTextColor(1, 1, 1)
+			self.IgnorePain.PainValue = PainValue
+			self:Tag(self.IgnorePain.PainValue, "[ignorepain:cur]/[ignorepain:max]")
+			self.IgnorePain.PainValue:SetPoint("CENTER",self.IgnorePain,0,0)
 		end
 
 		--[[ Buffs
@@ -435,7 +440,6 @@ local function Shared(self, unit)
 	HealthPer:SetTextColor(1,1,1)
 	self.HealthValue = HealthValue
 	self.HealthPer = HealthPer
-	Health.textSeparator = textSeparator
 	self:Tag(self.HealthPer,"[grumpy:hpper]")
 	self:Tag(self.HealthValue, "[grumpy:shorthp]")
 

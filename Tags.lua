@@ -1,5 +1,6 @@
---NumberFormat
-local function NumberFormat(value)
+-- Tags
+-- ShortNumber
+local function ShortNumber(value)
 	if(value >= 1e6) then
 		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
 	elseif(value >= 1e4) then
@@ -17,7 +18,7 @@ oUF.Tags.Methods["grumpy:shorthp"] = function(unit)
 	if(UnitIsDead(unit) or UnitIsGhost(unit)) then
 		return "|cff999999Dead|r"
 	end
-	return NumberFormat(UnitHealth(unit))
+	return ShortNumber(UnitHealth(unit))
 end
 
 oUF.Tags.Methods["grumpy:shortpp"] = function(unit)
@@ -25,7 +26,7 @@ oUF.Tags.Methods["grumpy:shortpp"] = function(unit)
 
 	local cur = UnitPower(unit) or 0
 
-	return NumberFormat(cur)
+	return ShortNumber(cur)
 end
 
 oUF.Tags.Methods["grumpy:hpper"] = function(unit)
@@ -35,6 +36,6 @@ oUF.Tags.Methods["grumpy:hpper"] = function(unit)
 	local hpMin, hpMax = UnitHealth(unit), UnitHealthMax(unit)
 	local hpPer = 0
 	if hpMax > 0 then hpPer = math.floor(hpMin/hpMax*100) end
-	return NumberFormat(hpPer).."%"
+	return ShortNumber(hpPer).."%"
 end
 
