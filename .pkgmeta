@@ -3,14 +3,15 @@ package-as: oUF_Grumpy
 enable-nolib-creation: no
 
 externals:
-	Embeds/oUF: git://github.com/oUF-wow/oUF.git
-	Embeds/oUF_IgnorePain: git://github.com/Pobre/oUF_IgnorePain.git
+  Embeds/oUF:
+    url: git://github.com/oUF-wow/oUF.git
+    tag: latest
+  Embeds/oUF_IgnorePain: git://github.com/Pobre/oUF_IgnorePain.git
 
 manual-changelog:
-	filename: CHANGELOG.md
-	markup-type: markdown
+  filename: CHANGELOG.md
+  markup-type: markdown
 
 tools-used:
-	- ouf
-	- ouf-ignorepain
-
+  - ouf
+  - ouf-ignorepain

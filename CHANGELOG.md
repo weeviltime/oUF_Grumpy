@@ -1,5 +1,8 @@
 # CHANGELOG
-----
+
+### Revision: 100
+* New redesign, clean, easy and finally becoming usable for your daily game.
+
 ### Revision: 95
 * New Layout, which won't stay. I'm releasing this version just so people can work from it if they have any idea to make it better. New versions will have new layout.
 
