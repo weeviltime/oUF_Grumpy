@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### Revision: 105
+* Embedded libraries finally.
+
 ### Revision: 100
 * New redesign, clean, easy and finally becoming usable for your daily game.
 
