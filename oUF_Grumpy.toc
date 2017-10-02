@@ -3,16 +3,7 @@
 ## Notes: Grumpy is an oUF layout for grumpy people.
 ## Author: GrumpyShaman
 ## Version: @project-version@
-
-Embeds/oUF/oUF.xml
-Embeds/oUF_IgnorePain/Tags.lua
-Embeds/oUF_IgnorePain/IgnorePain.lua
-
-#@do-not-package@
-../oUF/oUF.xml
-../oUF_IgnorePain/Tags.lua
-../oUF_IgnorePain/IgnorePain.lua
-#@end-do-not-package@
+## Dependencies: oUF, oUF_IgnorePain
 
 Fonts.xml
 Tags.lua
