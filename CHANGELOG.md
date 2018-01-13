@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### Revision: 110
+* Layout matured
+* Fonts changed, more readable font. Fira from Mozilla.
+* Bug fixes, positioning and sizes now correct.
+
 ### Revision: 105
 * Embedded libraries finally.
 
