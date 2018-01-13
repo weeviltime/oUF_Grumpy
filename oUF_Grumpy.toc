@@ -4,7 +4,7 @@
 ## Author: GrumpyShaman
 ## Version: @project-version@
 #@do-not-package@
-## Dependencies: oUF, oUF_IgnorePain
+## Dependencies: oUF
 #@end-do-not-package@
 
 Embeds/oUF/oUF.xml

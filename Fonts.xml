@@ -1,7 +1,7 @@
 <Ui xmlns='http://www.blizzard.com/wow/ui/'>
-	<FontFamily name='DejaVuTextNormal' virtual='true'>
+	<FontFamily name='TextNormal' virtual='true'>
 		<Member alphabet='roman'>
-			<Font font='Interface\AddOns\oUF_Grumpy\Fonts\DejaVuSans.ttf' height='10'>
+			<Font font='Interface\AddOns\oUF_Grumpy\Fonts\FiraSans-Bold.ttf' height='12'>
 				<Shadow>
 					<Offset x='1' y='-1' />
 					<Color r='0' g='0' b='0'/>
@@ -9,9 +9,9 @@
 			</Font>
 		</Member>
 	</FontFamily>
-	<FontFamily name='DejaVuAuraOutline' virtual='true'>
+	<FontFamily name='AuraOutline' virtual='true'>
 		<Member alphabet='roman'>
-			<Font font='Interface\AddOns\oUF_Grumpy\Fonts\DejaVuSans.ttf' height='12' OUTLINE='OUTLINE'>
+			<Font font='Interface\AddOns\oUF_Grumpy\Fonts\FiraSans-Book.ttf' height='12' OUTLINE='OUTLINE'>
 				<Shadow>
 					<Offset x='1' y='-1' />
 					<Color r='0' g='0' b='0'/>
@@ -20,11 +20,11 @@
 		</Member>
 	</FontFamily>
 
-	<Font name='DejaVuTextNormalLeft' inherits='DejaVuTextNormal' justifyH='LEFT' virtual='true' />
-	<Font name='DejaVuTextNormalCenter' inherits='DejaVuTextNormal' justifyH='CENTER' virtual='true' />
-	<Font name='DejaVuTextNormalRight' inherits='DejaVuTextNormal' justifyH='RIGHT' virtual='true' />
-	<Font name='DejaVuAuraOutlineLeft' inherits='DejaVuAuraOutline' justifyH='LEFT' virtual='true' />
-	<Font name='DejaVuAuraOutlineCenter' inherits='DejaVuAuraOutline' justifyH='CENTER' virtual='true' />
-	<Font name='DejaVuAuraOutlineRight' inherits='DejaVuAuraOutline' justifyH='RIGHT' virtual='true' />
+	<Font name='TextNormalLeft' inherits='TextNormal' justifyH='LEFT' virtual='true' />
+	<Font name='TextNormalCenter' inherits='TextNormal' justifyH='CENTER' virtual='true' />
+	<Font name='TextNormalRight' inherits='TextNormal' justifyH='RIGHT' virtual='true' />
+	<Font name='AuraOutlineLeft' inherits='AuraOutline' justifyH='LEFT' virtual='true' />
+	<Font name='AuraOutlineCenter' inherits='AuraOutline' justifyH='CENTER' virtual='true' />
+	<Font name='AuraOutlineRight' inherits='AuraOutline' justifyH='RIGHT' virtual='true' />
 </Ui>
 

@@ -1,5 +1,6 @@
 -- Tags
 -- ShortNumber
+-- Thanks P3lim
 local function ShortNumber(value)
 	if(value >= 1e6) then
 		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
