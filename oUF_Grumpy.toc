@@ -7,8 +7,8 @@
 ## Dependencies: oUF
 #@end-do-not-package@
 
-Embeds/oUF/oUF.xml
-Embeds/oUF_IgnorePain/IgnorePain.lua
+Embeds\oUF\oUF.xml
+Embeds\oUF_IgnorePain\IgnorePain.lua
 
 Fonts.xml
 Tags.lua
