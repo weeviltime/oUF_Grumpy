@@ -1,3 +1,5 @@
+local _, ns = ...
+local oUF = ns.oUF
 local _, playerClass = UnitClass("player")
 
 local TEXTURE = "Interface\\ChatFrame\\ChatFrameBackground"

@@ -1,3 +1,6 @@
+local _, ns = ...
+local oUF = ns.oUF
+
 -- Tags
 -- ShortNumber
 -- Thanks P3lim
